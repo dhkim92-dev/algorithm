@@ -9,7 +9,7 @@ struct Divisors{
     int count;
 
     bool operator< (const Divisors& nxt) const {
-        if(number != nxt.number) return count > nxt.count;
+        if(count != nxt.count) return count > nxt.count;
         return number < nxt.number;
     }
 };
@@ -23,11 +23,12 @@ vector<int> solution(int e, vector<int> starts) {
         divisors[i].count = 2; // 1과 자기자신으로 무조건 나누어짐
     }
 
+    divisors[1].count = 1;
+
     for(int i = 2 ; i <= e ; i++){
         for(int j = i ; j <= e ; j++){
             long long limit = i*j;
             if(limit > e) break;
-            divisors[limit].number = static_cast<int>(limit);
             divisors[limit].count += (i == j) ? 1 : 2;
         }
     }
