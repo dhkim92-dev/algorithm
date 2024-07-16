@@ -1,3 +1,9 @@
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.IntStream;
+import java.io.*;
+
 public class Main {
 
     static void testRun(int no) throws IOException {
@@ -92,14 +98,13 @@ class Solution {
         
         for(int startLv = 1 ; startLv < levelLimit ; startLv++) {
             while(nrCharacters[startLv] > 0) {
-                
-                for(int day = 0 ; day <= days ; day++) {
-                    
+                for(int day = days ; day >=0 ; day--) {
                     for(int nextLv = startLv+1 ; nextLv <= levelLimit ; nextLv++) {
                         int requiredDays = nextLv - startLv;
                         if(day + requiredDays > days) {
                             break;
                         }
+
                         long dStr = strength[nextLv] - strength[startLv];
                         dp[day+requiredDays] = Math.max(dp[day+requiredDays], dp[day] + dStr);
                     }
@@ -112,4 +117,5 @@ class Solution {
         System.out.println(answer);
     }
 }
+
 
