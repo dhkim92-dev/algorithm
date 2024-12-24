@@ -28,6 +28,9 @@ class Solution {
         for(int i = 1 ; i <= N ; i++) {
             for(int j = 1 ; j <= i ; j++) {
                 if(targets[j] < targets[i]) {
+                    // targets[j] 보다 targets[i]가 크다면
+                    // dp[j] = dp[j] + 1 이 된다.
+                    // dp[i] = max(dp[i] , dp[j] + 1);
                     dp[i] = max(dp[i], dp[j]+1);
                 }
             }
