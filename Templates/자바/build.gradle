@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.register("runTest") {
+    dependsOn 'compileJava'
+    doLast {
+        def txtDir = file('src/main/resources') // .txt 파일이 있는 디렉토리
+        def txtFiles = txtDir.listFiles().findAll { it.name.endsWith('.in') }
+
+        if (txtFiles.isEmpty()) {
+            throw new GradleException("No .txt files found in the directory.")
+        }
+
+        txtFiles.each { file ->
+            def prefixName = file.name.replace('.in', '')
+            def outputStream = new ByteArrayOutputStream();
+            def startTime = System.currentTimeMillis();
+            javaexec {
+                main = 'algorithm.Main' // main 클래스 지정
+                classpath = sourceSets.main.runtimeClasspath // 클래스패스 설정
+                standardInput = new FileInputStream(file) // 파일을 stdin으로 전달
+                standardOutput = outputStream // stdout을 ByteArrayOutputStream으로 설정
+            }
+            def endTime = System.currentTimeMillis();
+
+            def result = outputStream.toString().trim()
+            def outputFile = new File("src/main/resources/"+prefixName + ".out");
+            if ( outputFile.exists() ) {
+                def expectedOutput = new String(new FileInputStream(outputFile).bytes).trim()
+                if ( result == expectedOutput ) {
+                    println("#### Test passed for ${file.name} ####")
+                } else {
+                    println("#### Test failed for ${file.name} ####")
+                    println("   Expected: \n${expectedOutput}")
+                    println("   Actual: \n${result}")
+                }
+                println("   process time : " + (endTime - startTime) + "ms")
+            }
+        }
+    }
+}
+
+tasks.register('runMain', JavaExec) {
+    main = 'algorithm.Main'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in // System.in 활성화
+}
